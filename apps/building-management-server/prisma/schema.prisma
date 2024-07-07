@@ -1,0 +1,89 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Customers {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  name           String?
+  email          String?
+  phoneNumber    String?
+  buildingsItems Buildings[]
+}
+
+model Buildings {
+  id                 String          @id @default(cuid())
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  name               String?
+  address            String?
+  collaboratorsItems Collaborators[]
+  rentHomesItems     RentHomes[]
+  customer           Customers?      @relation(fields: [customerId], references: [id])
+  customerId         String?
+}
+
+model Collaborators {
+  id         String                 @id @default(cuid())
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  name       String?
+  role       EnumCollaboratorsRole?
+  email      String?
+  building   Buildings?             @relation(fields: [buildingId], references: [id])
+  buildingId String?
+}
+
+model Residents {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  name           String?
+  email          String?
+  phoneNumber    String?
+  contractsItems Contracts[]
+}
+
+model RentHomes {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  name           String?
+  building       Buildings?  @relation(fields: [buildingId], references: [id])
+  buildingId     String?
+  contractsItems Contracts[]
+}
+
+model Roles {
+  id        String             @id @default(cuid())
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  roleName  EnumRolesRoleName?
+}
+
+model Contracts {
+  id             String     @id @default(cuid())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  contractNumber String?
+  startDate      DateTime?
+  endDate        DateTime?
+  rentHome       RentHomes? @relation(fields: [rentHomeId], references: [id])
+  rentHomeId     String?
+  resident       Residents? @relation(fields: [residentId], references: [id])
+  residentId     String?
+}
+
+enum EnumCollaboratorsRole {
+  Option1
+}
+
+enum EnumRolesRoleName {
+  Option1
+}
